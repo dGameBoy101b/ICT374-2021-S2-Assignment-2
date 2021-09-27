@@ -12,6 +12,12 @@ struct CharVec {
 */
 struct CharVec* createCharVec();
 
+/** Create a new character vector from a C-string
+\param str The C-string to copy character from (excluding terminating '\0')
+\return The new character vector (NULL if failed)
+*/
+struct CharVec* createCharVecStr(const char*const str);
+
 /** Destroy the given character vector
 \param vec The character vector to destroy
 */
@@ -57,5 +63,12 @@ int appendEleCharVec(struct CharVec*const vec, char c);
 \return 0 on failure, 1 on success
 */
 int clearCharVec(struct CharVec*const vec);
+
+/** Check if the given character vectors have the same content
+\param u A character vector to compare
+\param v The other character vector to compare
+\return 1 if true, 0 if false
+*/
+int equalCharVec(const struct CharVec*const u, const struct CharVec*const v);
 
 #endif // CHAR_VECTOR_H
