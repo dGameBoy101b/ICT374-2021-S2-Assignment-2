@@ -9,14 +9,14 @@ struct CharVec* createCharVec()
 	vec->vec = malloc(sizeof(char));
 	return vec;
 }
-void destroyCharVec(struct CharVec** vec)
+void destroyCharVec(struct CharVec**const vec)
 {
 	if (vec == NULL || *vec == NULL) return;
 	free((*vec)->vec);
 	free(*vec);
 	*vec = NULL;
 }
-int copyCharVec(struct CharVec* dst, struct CharVec* src)
+int copyCharVec(struct CharVec*const dst, const struct CharVec* src)
 {
 	if (dst == NULL || src == NULL) return 0;
 	if (!reserveCharVec(dst, src->count)) return 0;
@@ -24,12 +24,12 @@ int copyCharVec(struct CharVec* dst, struct CharVec* src)
 	dst->count = src->count;
 	return 1;
 }
-char* getEleCharVec(struct CharVec* vec, unsigned int index)
+char* getEleCharVec(const struct CharVec*const vec, unsigned int index)
 {
 	if (vec == NULL || index >= vec->count) return NULL;
 	return vec->vec + index;
 }
-int getStrCharVec(char** str, struct CharVec* vec)
+int getStrCharVec(char**const str, const struct CharVec*const vec)
 {
 	if (str == NULL || vec == NULL) return 0;
 	char* cha = realloc(*str, sizeof(char) * (vec->count + 1));
@@ -39,7 +39,7 @@ int getStrCharVec(char** str, struct CharVec* vec)
 	(*str)[vec->count] = '\0';
 	return 1;
 }
-int reserveCharVec(struct CharVec* vec, unsigned int cap)
+int reserveCharVec(struct CharVec*const vec, unsigned int cap)
 {
 	if (vec == NULL) return 0;
 	if (cap <= vec->capacity) return 1;
@@ -49,7 +49,7 @@ int reserveCharVec(struct CharVec* vec, unsigned int cap)
 	vec->capacity = cap;
 	return 1;
 }
-int appendEleCharVec(struct CharVec* vec, char c)
+int appendEleCharVec(struct CharVec*const vec, char c)
 {
 	if (vec == NULL) return 0;
 	if (vec->count + 1 > vec->capacity) if(!reserveCharVec(vec, vec->count + 1)) return 0;
@@ -57,7 +57,7 @@ int appendEleCharVec(struct CharVec* vec, char c)
 	++(vec->count);
 	return 1;
 }
-int clearCharVec(struct CharVec* vec)
+int clearCharVec(struct CharVec*const vec)
 {
 	if (vec == NULL) return 0;
 	if (vec->count == 0) return 1;
