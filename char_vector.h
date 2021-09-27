@@ -1,3 +1,6 @@
+#ifndef CHAR_VECTOR_H
+#define CHAR_VECTOR_H
+
 struct CharVec {
 	char* vec; ///The dynamic array containing all elements
 	unsigned int count; ///The number of elements on the vector
@@ -54,3 +57,5 @@ int appendEleCharVec(struct CharVec*const vec, char c);
 \return 0 on failure, 1 on success
 */
 int clearCharVec(struct CharVec*const vec);
+
+#endif // CHAR_VECTOR_H
