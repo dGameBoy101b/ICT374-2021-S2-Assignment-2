@@ -41,11 +41,10 @@ char *GetCWD()
 }
 
 /* Prints the path of the current working directory.
- * stream: pointer to a FILE to print to.
  */
-void PrintCWD(FILE *stream)
+void PrintCWD()
 {
 	char *cwd = GetCWD();
-	fprintf(stream, "%s\n", cwd);
+	printf("%s\n", cwd);
 	free(cwd);
 }

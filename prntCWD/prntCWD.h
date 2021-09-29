@@ -15,4 +15,4 @@ char *GetCWD();
 /* Prints the path of the current working directory.
  * stream: pointer to a FILE to print to.
  */
-void PrintCWD(FILE *stream);
+void PrintCWD();
