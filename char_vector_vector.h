@@ -17,7 +17,7 @@ struct CharVecVec* createCharVecVec();
 /** Destroy the given vector of character vectors
 \param vec The vector to destroy
 */
-void destroyCharVecVec(struct CharVecVec**const vec);
+void destroyCharVecVec(struct CharVecVec* vec);
 
 /** Reserve more space in the given vector for the given minimum capacity
 \param vec The vector of character vectors to expand

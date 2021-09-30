@@ -28,13 +28,12 @@ struct CharVec* createCharVecStr(const char*const str)
 		vec->vec[i] = str[i];
 	return vec;
 }
-void destroyCharVec(struct CharVec**const vec)
+void destroyCharVec(struct CharVec* vec)
 {
-	if (vec == NULL || *vec == NULL)
+	if (vec == NULL)
 		return;
-	free((*vec)->vec);
-	free(*vec);
-	*vec = NULL;
+	free(vec->vec);
+	free(vec);
 }
 int copyCharVec(struct CharVec*const dst, const struct CharVec* src)
 {

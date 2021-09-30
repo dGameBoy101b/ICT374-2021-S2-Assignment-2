@@ -1,4 +1,5 @@
 #include "char_vector_vector.h"
+#include <stdlib.h>
 struct CharVecVec* createCharVecVec()
 {
 	struct CharVecVec* vec = malloc(sizeof(struct CharVecVec));
@@ -15,15 +16,15 @@ struct CharVecVec* createCharVecVec()
 	vec->capacity = 1;
 	return vec;
 }
-void destroyCharVecVec(struct CharVecVec**const vec)
+void destroyCharVecVec(struct CharVecVec* vec)
 {
-	if (vec == NULL || *vec == NULL)
+	if (vec == NULL)
 		return;
-	for (unsigned int i = 0; i < (*vec)->count; ++i)
-		destroyCharVec(&((*vec)->vec + i));
-	free((*vec)->vec);
-	free(*vec);
-	*vec = NULL;
+	for (unsigned int i = 0; i < vec->count; ++i)
+		destroyCharVec(vec->vec + i);
+	free(vec->vec);
+	free(vec);
+	vec = NULL;
 }
 int reserveCharVecVec(struct CharVecVec*const vec, unsigned int cap)
 {
@@ -35,12 +36,20 @@ int reserveCharVecVec(struct CharVecVec*const vec, unsigned int cap)
 	if (cha == NULL)
 		return 0;
 	vec->vec = cha;
+	for (unsigned int i = vec->count; i < cap; ++i)
+	{
+		(vec->vec + i)->vec = NULL;
+		(vec->vec + i)->capacity = 0;
+		(vec->vec + i)->count = 0;
+	}
 	vec->capacity = cap;
 	return 1;
 }
 int copyCharVecVec(struct CharVecVec*const dst, const struct CharVecVec*const src)
 {
-	if (dst == NULL || src == NULL || !reserveCharVecVec(dst, src->count))
+	if (dst == NULL || src == NULL)
+		return 0;
+	if (!reserveCharVecVec(dst, src->count))
 		return 0;
 	for (unsigned int i = 0; i < src->count; ++i)
 		if (!copyCharVec(dst->vec + i, src->vec + i))
@@ -65,7 +74,11 @@ struct CharVec* getEleCharVecVec(struct CharVecVec*const vec, unsigned int index
 }
 int appendEleCharVecVec(struct CharVecVec*const vec, const struct CharVec*const ele)
 {
-	if (vec == NULL || ele == NULL || !reserveCharVecVec(vec, vec->count + 1) || !copyCharVec(vec->vec + vec->count, ele))
+	if (vec == NULL || ele == NULL)
+		return 0;
+	if (!reserveCharVecVec(vec, vec->count + 1))
+		return 0;
+	if (!copyCharVec(vec->vec + vec->count, ele))
 		return 0;
 	(vec->count)++;
 	return 1;
@@ -78,7 +91,7 @@ int clearCharVecVec(struct CharVecVec*const vec)
 	if (cha == NULL)
 		return 0;
 	for (unsigned int i = 0; i < vec->count; ++i)
-		destroyCharVec(&(vec->vec + i));
+		destroyCharVec(vec->vec + i);
 	free(vec->vec);
 	vec->vec = cha;
 	vec->capacity = 1;
