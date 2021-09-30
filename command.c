@@ -25,7 +25,6 @@ struct Command* createCom()
 	com->output_file = NULL;
 	com->input_pipe = NULL;
 	com->output_pipe = NULL;
-	com->async = 0;
 	return com;
 }
 
@@ -82,7 +81,6 @@ int copyCom(struct Command* dst, const struct Command* src)
 	}
 	dst->input_pipe = src->input_pipe;
 	dst->output_pipe = src->output_pipe;
-	dst->async = src->async;
 	return 1;
 }
 
@@ -90,7 +88,6 @@ int equalCom(const struct Command* com1, const struct Command* com2)
 {
 	return com1 != NULL
 		&& com2 != NULL
-		&& com1->async == com2->async
 		&& com1->input_pipe == com2->input_pipe
 		&& com1->output_pipe == com2->output_pipe
 		&& equalCharVec(com1->path, com2->path)
