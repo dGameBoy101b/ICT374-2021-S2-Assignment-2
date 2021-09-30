@@ -12,7 +12,6 @@ struct Command
 	struct CharVec* output_file; ///The path to the output file to use (NULL for terminal or pipe)
 	struct Command* input_pipe; ///The command to take input from (NULL for terminal or file)
 	struct Command* output_pipe; ///The command to output to (NULL for terminal or file)
-	unsigned char async; ///0 if the command should be executed sequentially, 1 if the command should be executed asynchronously
 };
 
 /** Create an empty command
