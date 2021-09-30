@@ -5,15 +5,9 @@ struct CharVecVec* createCharVecVec()
 	struct CharVecVec* vec = malloc(sizeof(struct CharVecVec));
 	if (vec == NULL)
 		return NULL;
-	struct CharVec* cha = malloc(sizeof(struct CharVec));
-	if (cha == NULL)
-	{
-		free(vec);
-		return NULL;
-	}
-	vec->vec = cha;
+	vec->vec = NULL;
 	vec->count = 0;
-	vec->capacity = 1;
+	vec->capacity = 0;
 	return vec;
 }
 void destroyCharVecVec(struct CharVecVec* vec)
@@ -87,14 +81,11 @@ int clearCharVecVec(struct CharVecVec*const vec)
 {
 	if (vec == NULL)
 		return 0;
-	struct CharVec* cha = malloc(sizeof(struct CharVec));
-	if (cha == NULL)
-		return 0;
 	for (unsigned int i = 0; i < vec->count; ++i)
 		destroyCharVec(vec->vec + i);
 	free(vec->vec);
-	vec->vec = cha;
-	vec->capacity = 1;
+	vec->vec = NULL;
+	vec->capacity = 0;
 	vec->count = 0;
 	return 1;
 }

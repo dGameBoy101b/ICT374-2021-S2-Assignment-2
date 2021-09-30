@@ -4,12 +4,11 @@
 struct CharVec* createCharVec()
 {
 	struct CharVec* vec = (struct CharVec*)malloc(sizeof(struct CharVec));
-	if (vec == NULL) return NULL;
-	char* cha = malloc(sizeof(char));
-	if (cha == NULL) return NULL;
+	if (vec == NULL)
+		return NULL;
+	vec->vec = NULL;
+	vec->capacity = 0;
 	vec->count = 0;
-	vec->capacity = 1;
-	vec->vec = cha;
 	return vec;
 }
 struct CharVec* createCharVecStr(const char*const str)
@@ -94,13 +93,10 @@ int clearCharVec(struct CharVec*const vec)
 		return 0;
 	if (vec->count == 0)
 		return 1;
-	char* cha = malloc(sizeof(char));
-	if (cha == NULL)
-		return 0;
 	free(vec->vec);
-	vec->vec = cha;
+	vec->vec = NULL;
 	vec->count = 0;
-	vec->capacity = 1;
+	vec->capacity = 0;
 	return 1;
 }
 int equalCharVec(const struct CharVec*const u, const struct CharVec*const v)
