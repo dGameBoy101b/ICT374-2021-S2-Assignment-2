@@ -1,30 +1,27 @@
 #include "command.h"
 #include <stdlib.h>
 
+struct Command* emplaceCom(struct Command* com)
+{
+	if (com == NULL)
+		return NULL;
+	com->path = NULL;
+	com->args = NULL;
+	com->input_file = NULL;
+	com->output_file = NULL;
+	com->input_pipe = NULL;
+	com->output_pipe = NULL;
+	return com;
+}
+
 struct Command* createCom()
 {
 	struct Command* com = malloc(sizeof(struct Command));
 	if (com == NULL)
 		return NULL;
-	struct CharVec* path = createCharVec();
-	if (path == NULL)
-	{
-		free(com);
-		return NULL;
-	}
-	com->path = path;
-	struct CharVecVec* args = createCharVecVec();
-	if (args == NULL)
-	{
-		free(com);
-		destroyCharVec(path);
-		return NULL;
-	}
-	com->args = args;
-	com->input_file = NULL;
-	com->output_file = NULL;
-	com->input_pipe = NULL;
-	com->output_pipe = NULL;
+	emplaceCom(com);
+	com->path = createCharVec();
+	com->args = createCharVecVec();
 	return com;
 }
 
@@ -49,6 +46,10 @@ int copyCom(struct Command* dst, const struct Command* src)
 {
 	if (dst == NULL || src == NULL)
 		return 0;
+	if (dst->path == NULL)
+		dst->path = createCharVec();
+	if (dst->args == NULL)
+		dst->args = createCharVecVec();
 	if (!copyCharVec(dst->path, src->path))
 		return 0;
 	if (!copyCharVecVec(dst->args, src->args))

@@ -1,9 +1,9 @@
 #include "job.h"
+#include "command.h"
 #include <stdlib.h>
 
-struct Job* createJob()
+struct Job* emplaceJob(struct Job* job)
 {
-	struct Job* job = malloc(sizeof(struct Job));
 	if (job == NULL)
 		return NULL;
 	job->coms = NULL;
@@ -13,11 +13,16 @@ struct Job* createJob()
 	return job;
 }
 
+struct Job* createJob()
+{
+	return emplaceJob(malloc(sizeof(struct Job)));
+}
+
 void destroyJob(struct Job* job)
 {
 	if (job == NULL)
 		return;
-	for (unsigned int i = 0; i < job->count; ++i)
+	for (int i = job->count - 1; i > 0 ; --i)
 		destroyCom(job->coms + i);
 	free(job->coms);
 	free(job);
@@ -32,7 +37,7 @@ int copyJob(struct Job*const dst, const struct Job*const src)
 	for (unsigned int i = 0; i < src->count; ++i)
 		if (!copyCom(dst->coms + i, src->coms + i))
 			return 0;
-	for (unsigned int i = 0; i , src->count; ++i)
+	for (unsigned int i = 0; i < src->count; ++i)
 	{
 		if (src->coms[i].input_pipe >= src->coms && src->coms[i].input_pipe < src->coms + src->count)
 			dst->coms[i].input_pipe = dst->coms + (src->coms[i].input_pipe - src->coms);
@@ -63,15 +68,10 @@ int reserveJob(struct Job*const job, unsigned int cap)
 	struct Command* temp = realloc(job->coms, sizeof(struct Command) * cap);
 	if (temp == NULL)
 		return 0;
+	job->coms = temp;
 	for (unsigned int i = job->count; i < cap; ++i)
-	{
-		job->coms[i].path = NULL;
-		job->coms[i].args = NULL;
-		job->coms[i].input_file = NULL;
-		job->coms[i].output_file = NULL;
-		job->coms[i].input_pipe = NULL;
-		job->coms[i].output_pipe = NULL;
-	}
+		emplaceCom(job->coms + i);
+	job->capacity = cap;
 	return 1;
 }
 
@@ -101,8 +101,5 @@ void clearJob(struct Job*const job)
 	for (unsigned int i = 0; i < job->count; ++i)
 		destroyCom(job->coms + i);
 	free(job->coms);
-	job->coms = NULL;
-	job->capacity = 0;
-	job->count = 0;
-	job->async = 0;
+	emplaceJob(job);
 }
