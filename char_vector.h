@@ -21,7 +21,7 @@ struct CharVec* createCharVecStr(const char*const str);
 /** Destroy the given character vector
 \param vec The character vector to destroy
 */
-void destroyCharVec(struct CharVec**const vec);
+void destroyCharVec(struct CharVec* vec);
 
 /** Copy the source character vector into the destination character vector
 \param dst The destination character vector to copy into
