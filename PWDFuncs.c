@@ -13,7 +13,6 @@ extern char **environ;
 
 void PrintPWD()
 {
-	//In theory, this is all that's needed if DirectoryWalk is the only way that the cwd and PWD are changed in the shell.
 	printf("%s\n", getenv("PWD"));
 }
 
@@ -24,7 +23,6 @@ char *GetCWD()
 	char *cwd = malloc(bufSize);
 	if(cwd == NULL)
 	{
-		fprintf(stderr, "No memory!\n");
 		return NULL;
 	}
 
@@ -41,7 +39,6 @@ char *GetCWD()
 		{
 			free(cwd);
 			cwd = NULL;
-			fprintf(stderr, "No memory!\n");
 			return NULL;
 		}
 		else
@@ -54,42 +51,35 @@ char *GetCWD()
 }
 
 /* Sets the PWD environment variable to the current working directory.
- * Returns int: -1 on error, 0 on success.
+ * Returns int: 0 on error, 1 on success.
  */
 int SetPWDtoCWD()
 {
-    int success = -1;
+    int success = 0;
     char *cwd = GetCWD();
 
     if(cwd != NULL)
     {
-        success = setenv("PWD", cwd, 1);
+        //+1 because setenv returns -1 for fail, 0 for success
+        success = setenv("PWD", cwd, 1) + 1;
         free(cwd);
     }
 
     return success;
 }
 
-int DirectoryWalk(char *pathname)
+int DirectoryWalk(const char *pathname)
 {
-	int success = -1;
+	int success = 0;
 
 	if(pathname == NULL)
 	{
 		pathname = getenv("HOME");
 	}
 
-    if(chdir(pathname) == 0)
+    if(chdir(pathname) == 0 && (success = SetPWDtoCWD()) == 0)
     {
-        if((success = SetPWDtoCWD()) == -1)
-        {
-            chdir(getenv("PWD"));
-        }
-    }
-
-    if(success == -1)
-    {
-        printf("Could not change directory to:\n%s\n", pathname);
+        chdir(getenv("PWD"));
     }
 
 	return success;
