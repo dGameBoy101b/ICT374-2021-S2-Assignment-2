@@ -14,6 +14,8 @@ struct Command
 	struct Command* output_pipe; ///The command to output to (NULL for terminal or file)
 };
 
+struct Command* emplaceCom(struct Command* com);
+
 /** Create an empty command
 \return The new empty command
 */
