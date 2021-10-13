@@ -47,4 +47,10 @@ int copyCom(struct Command* dst, const struct Command* src);
 */
 int equalCom(const struct Command* com1, const struct Command* com2);
 
+/** Clear the given command
+\param com The command to clear
+\return 0 on failure, 1 on success
+*/
+int clearCom(struct Command* com);
+
 #endif // COMMAND_H_INCLUDED

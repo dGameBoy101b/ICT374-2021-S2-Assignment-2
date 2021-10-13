@@ -94,12 +94,13 @@ struct Command* getEleJob(const struct Job*const job, unsigned int index)
 	return job->coms + index;
 }
 
-void clearJob(struct Job*const job)
+int clearJob(struct Job*const job)
 {
 	if (job == NULL)
-		return;
+		return 0;
 	for (unsigned int i = 0; i < job->count; ++i)
 		destroyCom(job->coms + i);
 	free(job->coms);
 	emplaceJob(job);
+	return 1;
 }

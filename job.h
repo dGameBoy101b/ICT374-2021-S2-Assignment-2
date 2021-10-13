@@ -68,7 +68,8 @@ struct Command* getEleJob(const struct Job*const job, unsigned int index);
 
 /** Clear the given job
 \param job The job to clear
+\return 0 on failure, 1 on success
 */
-void clearJob(struct Job*const job);
+int clearJob(struct Job*const job);
 
 #endif // JOB_H_INCLUDED

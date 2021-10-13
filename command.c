@@ -98,3 +98,24 @@ int equalCom(const struct Command* com1, const struct Command* com2)
 		&& ((com1->output_file == NULL && com2->output_file == NULL)
 			|| (com1->output_file != NULL && equalCharVec(com1->output_file, com2->output_file)));
 }
+
+int clearCom(struct Command*const com)
+{
+	if (com == NULL)
+		return 0;
+	clearCharVec(com->path);
+	clearCharVecVec(com->args);
+	if (com->input_file != NULL)
+		destroyCharVec(com->input_file);
+	com->input_file = NULL;
+	if (com->output_file != NULL)
+		destroyCharVec(com->output_file);
+	com->output_file = NULL;
+	if (com->input_pipe != NULL)
+		com->input_pipe->output_pipe = NULL;
+	com->input_pipe = NULL;
+	if (com->output_pipe != NULL)
+		com->output_pipe->input_pipe = NULL;
+	com->output_pipe = NULL;
+	return 1;
+}
