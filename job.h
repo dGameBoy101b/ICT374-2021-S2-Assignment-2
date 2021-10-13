@@ -11,6 +11,14 @@ struct Job
 	unsigned char async; ///0 if this job should be executed sequentially, 1 if this job should be executed asynchronously
 };
 
+/** Write empty values to the given job
+\param job The job to write empty values in
+\return The given pointer on success or NULL on failure
+\warning Does not properly destroy existing values
+\note Should only be used when reserving space for a job
+*/
+struct Job* emplaceJob(struct Job* job);
+
 /** Create an empty job
 \return The empty job
 */
@@ -25,6 +33,8 @@ void destroyJob(struct Job* job);
 \param dst The job to copy into
 \param src The job to copy from
 \return 0 on failure, 1 on success
+\note Keeps command pipe pointers relative to itself rather than exactly copying them
+\note (thus source and destination will fail value equal comparison)
 */
 int copyJob(struct Job*const dst, const struct Job*const src);
 
