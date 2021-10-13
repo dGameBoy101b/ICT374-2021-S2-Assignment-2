@@ -14,6 +14,12 @@ struct Command
 	struct Command* output_pipe; ///The command to output to (NULL for terminal or file)
 };
 
+/** Write empty values to the given command
+\param com The command to write empty values in
+\return The given pointer on success or NULL on failure
+\warning Does not properly destroy existing values
+\note Should only be used when reserving space for a command
+*/
 struct Command* emplaceCom(struct Command* com);
 
 /** Create an empty command
