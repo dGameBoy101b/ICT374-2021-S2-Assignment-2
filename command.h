@@ -34,7 +34,6 @@ void destroyCom(struct Command* com);
 \param dst The command to copy into
 \param src The command to copy from
 \return 0 on failure, 1 on success
-\note The input and output pipe members are only copied shallowly
 */
 int copyCom(struct Command* dst, const struct Command* src);
 

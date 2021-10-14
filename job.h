@@ -33,8 +33,6 @@ void destroyJob(struct Job* job);
 \param dst The job to copy into
 \param src The job to copy from
 \return 0 on failure, 1 on success
-\note Keeps command pipe pointers relative to itself rather than exactly copying them
-\note (thus source and destination will fail value equal comparison)
 */
 int copyJob(struct Job*const dst, const struct Job*const src);
 
