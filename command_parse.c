@@ -14,6 +14,13 @@ int parseCommands(struct JobVec*const out, const struct CharVecVec*const tokens)
 		destroyJob(job);
 		return 0;
 	}
+	struct CharVec* str = createCharVec();
+	if (str == NULL)
+	{
+		destroyJob(job);
+		destroyCom(com);
+		return 0;
+	}
 	int redir_in = 0;
 	int redir_out = 0;
 	for (unsigned int i = 0; i < tokens->count; ++i)
@@ -27,6 +34,7 @@ int parseCommands(struct JobVec*const out, const struct CharVecVec*const tokens)
 			{
 				destroyJob(job);
 				destroyCom(com);
+				destroyCharVec(str);
 				return 0;
 			}
 			redir_in = 0;
@@ -37,6 +45,7 @@ int parseCommands(struct JobVec*const out, const struct CharVecVec*const tokens)
 			{
 				destroyJob(job);
 				destroyCom(com);
+				destroyCharVec(str);
 				return 0;
 			}
 			redir_in = 0;
@@ -58,6 +67,7 @@ int parseCommands(struct JobVec*const out, const struct CharVecVec*const tokens)
 				{
 					destroyJob(job);
 					destroyCom(com);
+					destroyCharVec(str);
 					return 0;
 				}
 			}
@@ -70,21 +80,42 @@ int parseCommands(struct JobVec*const out, const struct CharVecVec*const tokens)
 				{
 					destroyJob(job);
 					destroyCom(com);
+					destroyCharVec(str);
 					return 0;
 				}
 			}
 			else
 			{
-				if (com->path->count < 1 && !copyCharVec(com->path, tokens->vec + i))
+				if (!clearCharVec(str) || !reserveCharVec(str, tokens->vec[i].count)
+						|| (tokens->vec[i].vec[0] != COM_PARSE_ESCAPE && !appendEleCharVec(str, tokens->vec[i].vec[0])))
 				{
 					destroyJob(job);
 					destroyCom(com);
+					destroyCharVec(str);
 					return 0;
 				}
-				if (!appendEleCharVecVec(com->args, tokens->vec + i))
+				for (unsigned int j = 1; j < tokens->vec[i].count; ++j)
+				{
+					if (!appendEleCharVec(str, tokens->vec[i].vec[j]))
+					{
+						destroyJob(job);
+						destroyCom(com);
+						destroyCharVec(str);
+						return 0;
+					}
+				}
+				if (com->path->count < 1 && !copyCharVec(com->path, str))
 				{
 					destroyJob(job);
 					destroyCom(com);
+					destroyCharVec(str);
+					return 0;
+				}
+				if (!appendEleCharVecVec(com->args, str))
+				{
+					destroyJob(job);
+					destroyCom(com);
+					destroyCharVec(str);
 					return 0;
 				}
 			}
@@ -94,9 +125,11 @@ int parseCommands(struct JobVec*const out, const struct CharVecVec*const tokens)
 	{
 		destroyJob(job);
 		destroyCom(com);
+		destroyCharVec(str);
 		return 0;
 	}
 	destroyJob(job);
 	destroyCom(com);
+	destroyCharVec(str);
 	return 1;
 }

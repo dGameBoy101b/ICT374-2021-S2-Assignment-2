@@ -4,6 +4,7 @@
 #include "job_vector.h"
 #include "char_vector_vector.h"
 
+#define COM_PARSE_ESCAPE '\\' ///The character used to escape the spcial meaning of the following characters
 #define JOB_SEP_SEQ ';' ///The sequential job separator
 #define JOB_SEP_ASYNC '&' ///The asynchronous job separator
 #define COM_SEP_PIPE '|' ///The pipe command separator
