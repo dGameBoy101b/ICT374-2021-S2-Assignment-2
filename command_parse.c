@@ -23,11 +23,6 @@ int parseCommands(struct JobVec*const out, const struct CharVecVec*const tokens)
 		case JOB_SEP_ASYNC:
 			job->async = 1;
 		case JOB_SEP_SEQ:
-			for (unsigned int j = 0; j < job->count - 1; ++j)
-			{
-				job->coms[j].output_pipe = job->coms + j + 1;
-				job->coms[j + 1].input_pipe = job->coms + j;
-			}
 			if (!appendEleJobVec(out, job) || !clearJob(job) || !clearCom(com))
 			{
 				destroyJob(job);
@@ -96,11 +91,6 @@ int parseCommands(struct JobVec*const out, const struct CharVecVec*const tokens)
 	}
 	if (out->count > 0)
 	{
-		for (unsigned int j = 0; j < job->count - 1; ++j)
-		{
-			job->coms[j].output_pipe = job->coms + j + 1;
-			job->coms[j + 1].input_pipe = job->coms + j;
-		}
 		if (!appendEleJobVec(out, job))
 		{
 			destroyJob(job);

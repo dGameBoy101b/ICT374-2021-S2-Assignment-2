@@ -10,8 +10,6 @@ struct Command
 	struct CharVecVec* args; ///The vector of arguments to use
 	struct CharVec* input_file; ///The path to the input file to use (NULL for terminal or pipe)
 	struct CharVec* output_file; ///The path to the output file to use (NULL for terminal or pipe)
-	struct Command* input_pipe; ///The command to take input from (NULL for terminal or file)
-	struct Command* output_pipe; ///The command to output to (NULL for terminal or file)
 };
 
 /** Write empty values to the given command

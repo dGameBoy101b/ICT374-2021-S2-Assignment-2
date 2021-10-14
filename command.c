@@ -9,8 +9,6 @@ struct Command* emplaceCom(struct Command* com)
 	com->args = NULL;
 	com->input_file = NULL;
 	com->output_file = NULL;
-	com->input_pipe = NULL;
-	com->output_pipe = NULL;
 	return com;
 }
 
@@ -35,10 +33,6 @@ void destroyCom(struct Command* com)
 		destroyCharVec(com->input_file);
 	if (com->output_file != NULL)
 		destroyCharVec(com->output_file);
-	if (com->input_pipe != NULL)
-		com->input_pipe->output_pipe = NULL;
-	if (com->output_pipe != NULL)
-		com->output_pipe->input_pipe = NULL;
 	free(com);
 }
 
@@ -80,8 +74,6 @@ int copyCom(struct Command* dst, const struct Command* src)
 		if (!copyCharVec(dst->output_file, src->output_file))
 			return 0;
 	}
-	dst->input_pipe = src->input_pipe;
-	dst->output_pipe = src->output_pipe;
 	return 1;
 }
 
@@ -89,8 +81,6 @@ int equalCom(const struct Command* com1, const struct Command* com2)
 {
 	return com1 != NULL
 		&& com2 != NULL
-		&& com1->input_pipe == com2->input_pipe
-		&& com1->output_pipe == com2->output_pipe
 		&& equalCharVec(com1->path, com2->path)
 		&& equalCharVecVec(com1->args, com2->args)
 		&& ((com1->input_file == NULL && com2->input_file == NULL)
@@ -111,11 +101,5 @@ int clearCom(struct Command*const com)
 	if (com->output_file != NULL)
 		destroyCharVec(com->output_file);
 	com->output_file = NULL;
-	if (com->input_pipe != NULL)
-		com->input_pipe->output_pipe = NULL;
-	com->input_pipe = NULL;
-	if (com->output_pipe != NULL)
-		com->output_pipe->input_pipe = NULL;
-	com->output_pipe = NULL;
 	return 1;
 }
