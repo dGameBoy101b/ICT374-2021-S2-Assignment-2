@@ -91,7 +91,7 @@ int clearJob(struct Job*const job)
 {
 	if (job == NULL)
 		return 0;
-	for (unsigned int i = 0; i < job->count; ++i)
+	for (int i = job->count - 1; i > -1; --i)
 		destroyCom(job->coms + i);
 	free(job->coms);
 	emplaceJob(job);

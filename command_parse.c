@@ -23,7 +23,7 @@ int parseCommands(struct JobVec*const out, const struct CharVecVec*const tokens)
 		case JOB_SEP_ASYNC:
 			job->async = 1;
 		case JOB_SEP_SEQ:
-			if (!appendEleJobVec(out, job) || !clearJob(job) || !clearCom(com))
+			if (!appendEleJob(job, com) || !clearCom(com) || !appendEleJobVec(out, job) || !clearJob(job))
 			{
 				destroyJob(job);
 				destroyCom(com);
@@ -52,6 +52,8 @@ int parseCommands(struct JobVec*const out, const struct CharVecVec*const tokens)
 			if (redir_in)
 			{
 				redir_in = 0;
+				if (com->input_file == NULL)
+					com->input_file = createCharVec();
 				if (!copyCharVec(com->input_file, tokens->vec + i))
 				{
 					destroyJob(job);
@@ -62,16 +64,9 @@ int parseCommands(struct JobVec*const out, const struct CharVecVec*const tokens)
 			else if (redir_out)
 			{
 				redir_out = 0;
+				if (com->output_file == NULL)
+					com->output_file = createCharVec();
 				if (!copyCharVec(com->output_file, tokens->vec + i))
-				{
-					destroyJob(job);
-					destroyCom(com);
-					return 0;
-				}
-			}
-			else if (com->path->count < 1)
-			{
-				if (!copyCharVec(com->path, tokens->vec + i))
 				{
 					destroyJob(job);
 					destroyCom(com);
@@ -80,6 +75,12 @@ int parseCommands(struct JobVec*const out, const struct CharVecVec*const tokens)
 			}
 			else
 			{
+				if (com->path->count < 1 && !copyCharVec(com->path, tokens->vec + i))
+				{
+					destroyJob(job);
+					destroyCom(com);
+					return 0;
+				}
 				if (!appendEleCharVecVec(com->args, tokens->vec + i))
 				{
 					destroyJob(job);
@@ -89,14 +90,11 @@ int parseCommands(struct JobVec*const out, const struct CharVecVec*const tokens)
 			}
 		}
 	}
-	if (out->count > 0)
+	if (com->path->count > 0 && (!appendEleJob(job, com) || !appendEleJobVec(out, job)))
 	{
-		if (!appendEleJobVec(out, job))
-		{
-			destroyJob(job);
-			destroyCom(com);
-			return 0;
-		}
+		destroyJob(job);
+		destroyCom(com);
+		return 0;
 	}
 	destroyJob(job);
 	destroyCom(com);
