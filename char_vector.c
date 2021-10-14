@@ -108,3 +108,17 @@ int equalCharVec(const struct CharVec*const u, const struct CharVec*const v)
 			return 0;
 	return 1;
 }
+int setCharVec(struct CharVec*const vec, const char*const str)
+{
+	if (vec == NULL || str == NULL)
+		return 0;
+	if (!clearCharVec(vec))
+		return 0;
+	unsigned int len = strlen(str);
+	if (!reserveCharVec(vec, len))
+		return 0;
+	for (unsigned int i = 0; i < len; ++i)
+		if (!appendEleCharVec(vec, str[i]))
+			return 0;
+	return 1;
+}
