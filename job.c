@@ -37,13 +37,6 @@ int copyJob(struct Job*const dst, const struct Job*const src)
 	for (unsigned int i = 0; i < src->count; ++i)
 		if (!copyCom(dst->coms + i, src->coms + i))
 			return 0;
-	for (unsigned int i = 0; i < src->count; ++i)
-	{
-		if (src->coms[i].input_pipe >= src->coms && src->coms[i].input_pipe < src->coms + src->count)
-			dst->coms[i].input_pipe = dst->coms + (src->coms[i].input_pipe - src->coms);
-		if (src->coms[i].output_pipe >= src->coms && src->coms[i].output_pipe < src->coms + src->count)
-			dst->coms[i].output_pipe = dst->coms + (src->coms[i].output_pipe - src->coms);
-	}
 	dst->count = src->count;
 	dst->async = src->async;
 	return 1;
@@ -94,12 +87,13 @@ struct Command* getEleJob(const struct Job*const job, unsigned int index)
 	return job->coms + index;
 }
 
-void clearJob(struct Job*const job)
+int clearJob(struct Job*const job)
 {
 	if (job == NULL)
-		return;
-	for (unsigned int i = 0; i < job->count; ++i)
+		return 0;
+	for (int i = job->count - 1; i > -1; --i)
 		destroyCom(job->coms + i);
 	free(job->coms);
 	emplaceJob(job);
+	return 1;
 }

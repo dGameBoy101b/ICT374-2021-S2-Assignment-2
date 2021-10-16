@@ -4,7 +4,9 @@
 #include "char_vector_vector.h"
 #include "char_vector.h"
 
-#define TOKEN_SEP ' ' /// The character used to separate tokens
+#define TOKEN_SEP0 ' ' ///The first character used to separate tokens
+#define TOKEN_SEP1 '\t' ///The second character used to separate tokens
+#define TOKEN_ESCAPE '\\' ///The escape character used to ignore token separators
 
 /** Split the given character vector into a vector of space separated tokens
 \param out The vector to fill with tokens
