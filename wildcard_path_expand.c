@@ -1,5 +1,6 @@
 #include "wildcard_path_expand.h"
 #include <glob.h>
+#include <stdlib.h>
 
 int expandArgPaths(struct Command*const com)
 {
@@ -25,14 +26,14 @@ int expandArgPaths(struct Command*const com)
 			free(str);
 			return 0;
 		}
-		if (glob(str, GLOB_NOSORT | GLOB_NOCHECK | GLOB_NOMAGIC, NULL, expand) != 0)
+		if (glob(str, GLOB_NOSORT | GLOB_NOCHECK | GLOB_NOMAGIC, NULL, &expand) != 0)
 		{
 			destroyCharVecVec(args);
 			destroyCharVec(new_arg);
 			free(str);
 			return 0;
 		}
-		for (char** expand_arg = expand->gl_pathv; expand_arg < expand->gl_pathv + expand->gl_pathv; ++expand_arg)
+		for (char** expand_arg = expand.gl_pathv; expand_arg < expand.gl_pathv + expand.gl_pathc; ++expand_arg)
 		{
 			if (!setCharVec(new_arg, str))
 			{
