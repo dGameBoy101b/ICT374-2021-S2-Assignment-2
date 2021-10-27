@@ -71,4 +71,11 @@ int clearCharVec(struct CharVec*const vec);
 */
 int equalCharVec(const struct CharVec*const u, const struct CharVec*const v);
 
+/** Set the contents of the given character vector to the given C-string
+\param vec The character vector to set the contents of
+\param str The C-string to copy characters from
+\return 0 on failure, 1 on success
+*/
+int setCharVec(struct CharVec*const vec, const char*const str);
+
 #endif // CHAR_VECTOR_H

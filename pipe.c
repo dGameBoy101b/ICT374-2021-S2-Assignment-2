@@ -53,7 +53,7 @@ int GetWriteEnd(Pipe *pipe)
 
 void CloseReadEnd(Pipe *pipe)
 {
-    if(pipe != NULL)
+    if(pipe != NULL && pipe->read != -1)
     {
         close(pipe->read);
         pipe->read = -1;
@@ -62,7 +62,7 @@ void CloseReadEnd(Pipe *pipe)
 
 void CloseWriteEnd(Pipe *pipe)
 {
-    if(pipe != NULL)
+    if(pipe != NULL && pipe->write != -1)
     {
         close(pipe->write);
         pipe->write = -1;

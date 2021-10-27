@@ -35,7 +35,6 @@ void RedirectPipes(Pipe *prevPipe, Pipe *nextPipe)
     {
         exit(1);
     }
-
     CloseWriteEnd(nextPipe);
 
     if(ReadEndOpen(prevPipe) && dup2(GetReadEnd(prevPipe), STDIN_FILENO) == -1)
@@ -93,30 +92,26 @@ void RedirectStdinStdout(Pipe *prevPipe, Pipe *nextPipe, const struct Command *c
     fileOutBuf = NULL;
 }
 
-/* Waits for all jobs in the same process group to finish.
- * pgID: the process group ID
+/* Waits for all jobs in the same process group as caller to finish.
  */
-void WaitForSeqJob(int pgid)
+void WaitForSeqJob()
 {
     int status;
     int returnPID = 0;
-    pgid = pgid * -1;
 
     while(returnPID != -1)
     {
-        returnPID = waitpid(pgid, &status, 0);
+        returnPID = waitpid(0, &status, 0);
     }
 }
 
 int ExecuteJob(const struct Job *job)
 {
     Pipe *nextPipe = NULL;
-    Pipe prevPipe;
+    Pipe *prevPipe = NULL;
     int pid;
     int pgID = -1;
 
-    prevPipe.read = -1;
-    prevPipe.write = -1;
 
     //Some commands aren't executed in a forked child process.
     if(job->count == 1 && ExecuteSpecial(&(job->coms[0])))
@@ -126,6 +121,7 @@ int ExecuteJob(const struct Job *job)
 
     for(unsigned int i = 0; i < job->count; i++)
     {
+
         if(i + 1 < job->count && (nextPipe = CreatePipe()) == NULL)
         {
             return 0;
@@ -139,41 +135,44 @@ int ExecuteJob(const struct Job *job)
 
         if(pid == 0)
         {
-            RedirectStdinStdout(&prevPipe, nextPipe, &(job->coms[i]));
-            //ExecuteCommand(command) goes here
+            RedirectStdinStdout(prevPipe, nextPipe, &(job->coms[i]));
+            executeCommand(&(job->coms[i]));
         }
 
-        //Set the process group ID for the job
-        if(pgID == -1)
+        CloseWriteEnd(prevPipe);
+        CloseReadEnd(prevPipe);
+        free(prevPipe);
+        prevPipe = NULL;
+
+        CloseWriteEnd(nextPipe);
+        prevPipe = nextPipe;
+        nextPipe = NULL;
+
+        if(job->async == 1)
         {
-            pgID = pid;
-            if(setpgid(pid, 0) == -1)
+            //Set the process group ID for the job
+            if(pgID == -1)
+            {
+                pgID = pid;
+                if(setpgid(pid, 0) == -1)
+                {
+                    return 0;
+                }
+            }
+
+            //Set the process group for the child process
+            if(setpgid(pid, pgID) == -1)
             {
                 return 0;
             }
         }
 
-        //Set the process group for the child process
-        if(setpgid(pid, pgID) == -1)
-        {
-            return 0;
-        }
 
-        CloseWriteEnd(nextPipe);
-        CloseReadEnd(&prevPipe);
-
-        if(nextPipe != NULL)
-        {
-            dup2(GetReadEnd(nextPipe), GetReadEnd(&prevPipe));
-            CloseReadEnd(nextPipe);
-        }
-        free(nextPipe);
-        nextPipe = NULL;
     }
 
-    if(pgID != -1 && job->async == 0)
+    if(job->async == 0)
     {
-        WaitForSeqJob(pgID);
+        WaitForSeqJob();
     }
 
     return 1;

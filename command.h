@@ -10,8 +10,6 @@ struct Command
 	struct CharVecVec* args; ///The vector of arguments to use
 	struct CharVec* input_file; ///The path to the input file to use (NULL for terminal or pipe)
 	struct CharVec* output_file; ///The path to the output file to use (NULL for terminal or pipe)
-	struct Command* input_pipe; ///The command to take input from (NULL for terminal or file)
-	struct Command* output_pipe; ///The command to output to (NULL for terminal or file)
 };
 
 /** Write empty values to the given command
@@ -36,7 +34,6 @@ void destroyCom(struct Command* com);
 \param dst The command to copy into
 \param src The command to copy from
 \return 0 on failure, 1 on success
-\note The input and output pipe members are only copied shallowly
 */
 int copyCom(struct Command* dst, const struct Command* src);
 
@@ -46,5 +43,11 @@ int copyCom(struct Command* dst, const struct Command* src);
 \return 1 if equal, 0 if not equal
 */
 int equalCom(const struct Command* com1, const struct Command* com2);
+
+/** Clear the given command
+\param com The command to clear
+\return 0 on failure, 1 on success
+*/
+int clearCom(struct Command* com);
 
 #endif // COMMAND_H_INCLUDED
