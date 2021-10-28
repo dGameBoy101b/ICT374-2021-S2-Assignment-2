@@ -9,16 +9,7 @@
 #include "executeJob.h"
 #include "pipe.h"
 #include "fileIORedirect.h"
-
-/* Executes special built-in commands that affect the shell.
- * command: a Command struct to execute.
- * returns int: 0 if special commands not executed, or 1 if executed successfully.
- */
-int ExecuteSpecial(const struct Command *command)
-{
-    //Execute the special commands, e.g. to change directory.
-    return 0;
-}
+#include "execute_command.h"
 
 /* Redirects stdin and stdout
  * prevPipe: Pipe to receive input from.
@@ -114,7 +105,7 @@ int ExecuteJob(const struct Job *job)
 
 
     //Some commands aren't executed in a forked child process.
-    if(job->count == 1 && ExecuteSpecial(&(job->coms[0])))
+    if(job->count == 1 && executeSpecial(&(job->coms[0])))
     {
         return 1;
     }

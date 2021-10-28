@@ -13,6 +13,38 @@ int equalCharVecStr(struct CharVec *vec, const char *str)
     return equal;
 }
 
+int executeSpecial(const struct Command *const com)
+{
+    if(com == NULL)
+    {
+        return 0;
+    }
+
+    char* str = NULL;
+    int res;
+
+    //Note: a check for CD_KEYWORD is in the normal executeCommand function
+    //but it wouldn't really do anything if called from a child process. That
+    //is OK and in line with the behaviour of the bash shell.
+    if(equalCharVecStr(com->path, CD_KEYWORD))
+    {
+        if(com->args->count >= 2 && !getStrCharVec(&str, getEleCharVecVec(com->args, 1)))
+        {
+            return 0;
+        }
+
+        res = DirectoryWalk(str);
+
+		free(str);
+		if (res)
+		{
+            return 1;
+		}
+    }
+
+    return 0;
+}
+
 void executeCommand(const struct Command*const com)
 {
 	if (com == NULL)
