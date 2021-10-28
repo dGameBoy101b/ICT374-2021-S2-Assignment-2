@@ -1,7 +1,17 @@
 #include "execute_command.h"
 #include "PWDFuncs.h"
 #include "change_prompt.h"
+#include <unistd.h>
 #include <stdlib.h>
+
+int equalCharVecStr(struct CharVec *vec, const char *str)
+{
+    int equal = 0;
+    struct CharVec *chVec = createCharVecStr(str);
+    equal = equalCharVec(vec, chVec);
+    destroyCharVec(chVec);
+    return equal;
+}
 
 void executeCommand(const struct Command*const com)
 {
@@ -10,28 +20,28 @@ void executeCommand(const struct Command*const com)
 	//check for special commands
 	char* str = NULL;
 	int res;
-	if (equalCharVec(com->path, PWD_KEYWORD)
+	if (equalCharVecStr(com->path, PWD_KEYWORD))
 	{
 		PrintPWD();
 		exit(0);
 	}
-	if (equalCharVec(com->path, CD_KEYWORD))
+	if (equalCharVecStr(com->path, CD_KEYWORD))
 	{
-		res = com->args->count < 2 || !getStrCharVec(str, com->args->vec + 1) || !DirectoryWalk(str);
+		res = com->args->count < 2 || !getStrCharVec(&str, com->args->vec + 1) || !DirectoryWalk(str);
 		free(str);
 		if (res)
 			exit(0);
 		exit(-1);
 	}
-	if (equalCharVec(com->path, PROMPT_KEYWORD))
+	if (equalCharVecStr(com->path, PROMPT_KEYWORD))
 	{
-		res = com->args->count < 2 || !getStrCharVec(str, com->args->vec + 1) || !changePrompt(str);
+		res = com->args->count < 2 || !getStrCharVec(&str, com->args->vec + 1) || !changePrompt(str);
 		free(str);
 		if (res)
 			exit(0);
 		exit(-1);
 	}
-	if (!getStrCharVec(str, com->path))
+	if (!getStrCharVec(&str, com->path))
 		exit(-1);
 	char** argv = malloc(sizeof(char*) * (com->args->count + 1));
 	if (argv == NULL)
@@ -44,7 +54,7 @@ void executeCommand(const struct Command*const com)
 	for (unsigned int i = 0; i < com->args->count; ++i)
 	{
 		argv[i] = NULL;
-		if (!getStrCharVec(argv[i], com->args->vec[i]))
+		if (!getStrCharVec(&argv[i], &(com->args->vec[i])))
 		{
 			free(str);
 			exit(-1);

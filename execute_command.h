@@ -3,13 +3,13 @@
 #include "command.h"
 
 /** The keyword used to run the print working directory command */
-const struct CharVec*const PWD_KEYWORD = createCharVecStr("pwd");
+#define PWD_KEYWORD "pwd"
 
 /** The keyword used to run the change directory command */
-const struct CharVec*const CD_KEYWORD = createCharVecStr("cd");
+#define CD_KEYWORD "cd"
 
 /** The keyword used to run the change prompt command */
-const struct CharVec*const PROMPT_KEYWORD = createCharVecStr("prompt");
+#define PROMPT_KEYWORD "prompt"
 
 /** Execute the given command as the current process
 \param com The command to run
