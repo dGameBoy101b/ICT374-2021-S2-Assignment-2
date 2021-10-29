@@ -6,6 +6,7 @@
 
 #include <unistd.h>
 #include "pipe.h"
+#include <stdlib.h>
 
 Pipe *CreatePipe()
 {

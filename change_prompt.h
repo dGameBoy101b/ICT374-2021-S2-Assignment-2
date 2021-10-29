@@ -1,6 +1,6 @@
 #pragma once
 
-#define PROMPT_PATH "~/.prompt" ///The path at which the prompt is stored
+#define PROMPT_PATH "~/prompt" ///The path at which the prompt is stored
 #define PROMPT_DEFAULT ">>> " ///The default prompt used when reading the prompt fails
 
 /** Change the prompt to the given prompt and write it to the home prompt file

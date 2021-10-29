@@ -5,7 +5,7 @@
 
 struct JobVec
 {
-	struct Job* vec; ///The dynamic vector containing all jobs
+	struct Job** vec; ///The dynamic vector containing all jobs
 	unsigned int capacity; ///The maximum number of jobs this can currently hold
 	unsigned int count; ///The number of jobs this is currently holding
 };
@@ -18,7 +18,7 @@ struct JobVec* createJobVec();
 /** Destruct the given job vector
 \param vec A pointer to the the job vector to destruct
 */
-void destroyJobVec(struct JobVec* vec);
+void destroyJobVec(struct JobVec** vec);
 
 /** Ensure atleast the given number of jobs can be stored in the given job vector
 \param vec The job vector to expand

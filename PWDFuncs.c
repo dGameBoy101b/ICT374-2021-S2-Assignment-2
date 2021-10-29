@@ -3,7 +3,7 @@
  * Date: 2 October 2021
  * Purpose: Provides functions for changing the current working directory and printing its path.
  */
-
+#define _POSIX_C_SOURCE 200112L //required to properly include setenv
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -71,10 +71,12 @@ int SetPWDtoCWD()
 int DirectoryWalk(const char *pathname)
 {
 	int success = 0;
+printf("cd path: %s\n",pathname);
 
 	if(pathname == NULL)
 	{
 		pathname = getenv("HOME");
+		printf("cd home: %s\n",pathname);
 	}
 
     if(chdir(pathname) == 0 && (success = SetPWDtoCWD()) == 0)

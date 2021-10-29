@@ -4,7 +4,7 @@
 #include "char_vector.h"
 
 struct CharVecVec {
-	struct CharVec* vec; ///The dynamic array of character vectors
+	struct CharVec** vec; ///The dynamic array of character vectors
 	unsigned int count; ///The number of character vectors in this vector
 	unsigned int capacity; ///The number of character vectors this vector can hold
 };
@@ -17,7 +17,7 @@ struct CharVecVec* createCharVecVec();
 /** Destroy the given vector of character vectors
 \param vec The vector to destroy
 */
-void destroyCharVecVec(struct CharVecVec* vec);
+void destroyCharVecVec(struct CharVecVec** vec);
 
 /** Reserve more space in the given vector for the given minimum capacity
 \param vec The vector of character vectors to expand

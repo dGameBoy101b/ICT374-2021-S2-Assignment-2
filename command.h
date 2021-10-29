@@ -28,7 +28,7 @@ struct Command* createCom();
 /** Destroy the given command
 \param com The command to destroy
 */
-void destroyCom(struct Command* com);
+void destroyCom(struct Command** com);
 
 /** Copy a given command into another given command
 \param dst The command to copy into

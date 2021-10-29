@@ -23,17 +23,18 @@ struct Command* createCom()
 	return com;
 }
 
-void destroyCom(struct Command* com)
+void destroyCom(struct Command** com)
 {
-	if (com == NULL)
+	if (com == NULL || *com == NULL)
 		return;
-	destroyCharVec(com->path);
-	destroyCharVecVec(com->args);
-	if (com->input_file != NULL)
-		destroyCharVec(com->input_file);
-	if (com->output_file != NULL)
-		destroyCharVec(com->output_file);
-	free(com);
+	destroyCharVec((*com)->path);
+	destroyCharVecVec(&((*com)->args));
+	if ((*com)->input_file != NULL)
+		destroyCharVec((*com)->input_file);
+	if ((*com)->output_file != NULL)
+		destroyCharVec((*com)->output_file);
+	free(*com);
+	*com = NULL;
 }
 
 int copyCom(struct Command* dst, const struct Command* src)

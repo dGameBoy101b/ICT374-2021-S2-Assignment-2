@@ -5,19 +5,11 @@
 
 struct Job
 {
-	struct Command* coms; ///The dynamic array that hollds all the command elements
+	struct Command** coms; ///The dynamic array that hollds all the command elements
 	unsigned int capacity; ///The number of elements the job can hold
 	unsigned int count; ///The number of elements the job is currently holding
 	unsigned char async; ///0 if this job should be executed sequentially, 1 if this job should be executed asynchronously
 };
-
-/** Write empty values to the given job
-\param job The job to write empty values in
-\return The given pointer on success or NULL on failure
-\warning Does not properly destroy existing values
-\note Should only be used when reserving space for a job
-*/
-struct Job* emplaceJob(struct Job* job);
 
 /** Create an empty job
 \return The empty job
@@ -27,7 +19,7 @@ struct Job* createJob();
 /** Destroy the given job
 \param job The job to destroy
 */
-void destroyJob(struct Job* job);
+void destroyJob(struct Job** job);
 
 /** Copy the given job into the other given job
 \param dst The job to copy into
