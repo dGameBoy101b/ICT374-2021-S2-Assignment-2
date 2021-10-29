@@ -16,7 +16,7 @@ int getPromptPath(char** prompt)
 		if (!appendEleCharVec(path, *c))
 			return 0;
 	char* c;
-	if (home == '\0')
+	if (home[0] == '\0')
 		c = PROMPT_PATH;
 	else
 		c = PROMPT_PATH + 1;

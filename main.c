@@ -30,7 +30,7 @@ int main(int argc, char** argv, char** env)
 	child_action.sa_sigaction = handleChild;
 	if (sigaction(SIGCHLD, &child_action, NULL))
 		exit(-1);
-	
+
 	char* prompt; //default prompt
 	if (!getPrompt(&prompt))
 	{
@@ -60,9 +60,11 @@ int main(int argc, char** argv, char** env)
 		}
 		for (unsigned int i = 0; i < jobs->count; ++i)
 		{
+            printf("Current job count == %d\n", jobs->count);
 			if (!ExecuteJob(jobs->vec[i]))
 				perror("Failed to execute a job");
 		}
+        clearJobVec(jobs);
 		if (!getPrompt(&prompt))
 			exit(-1);
 	}

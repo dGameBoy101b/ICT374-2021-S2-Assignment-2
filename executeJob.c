@@ -88,76 +88,87 @@ void RedirectStdinStdout(Pipe *prevPipe, Pipe *nextPipe, const struct Command *c
 }
 
 /* Waits for all jobs in the same process group as caller to finish.
- 
+ */
 void WaitForSeqJob()
 {
-printf("Waiting for processes in own process group to exit...\n");
     int status;
     int returnPID = 0;
 
     while(returnPID != -1)
     {
         returnPID = waitpid(0, &status, 0);
-	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-		printf("Command failed\n");
     }
-}*/
+}
 
 int ExecuteJob(const struct Job *job)
 {
-	if(job->count == 1 && job->coms[0]->path->count == 2 && job->coms[0]->path->vec[0] == CD_KEYWORD[0] && job->coms[0]->path->vec[1] == CD_KEYWORD[1])
-		return executeSpecial(job->coms[0]);
-
-	int pgid = fork();
-	if (pgid < 0)
-		return 0;
-	if (pgid > 0)
-	{
-		if (!job->async)
-			waitpid(pgid, NULL, 0);
-		return 1;
-	}
-        if(setpgid(0, 0) == -1)
-		exit(EXIT_FAILURE);
-	pgid = getpgrp();
-
-    	Pipe *nextPipe = NULL;
-    	Pipe *prevPipe = NULL;
-	int pid;
-	unsigned int children = 0;
+    Pipe *nextPipe = NULL;
+    Pipe *prevPipe = NULL;
+    int pid;
+    int pgID = -1;
 
 
-    	for(unsigned int i = 0; i < job->count; i++)
-    	{
-		if(i + 1 < job->count && (nextPipe = CreatePipe()) == NULL)
-			exit(EXIT_FAILURE);
+    //Some commands aren't executed in a forked child process.
+    if(job->count == 1 && executeSpecial(job->coms[0]))
+    {
+        return 1;
+    }
 
-		pid = fork();
-		if(pid < 0)
-			exit(EXIT_FAILURE);
-		if(pid == 0)
-		{
-		    RedirectStdinStdout(prevPipe, nextPipe, job->coms[i]);
-		    executeCommand(job->coms[i]);
-		}
-		++children;
+    for(unsigned int i = 0; i < job->count; i++)
+    {
 
-		CloseWriteEnd(prevPipe);
-		CloseReadEnd(prevPipe);
-		free(prevPipe);
-		prevPipe = NULL;
+        if(i + 1 < job->count && (nextPipe = CreatePipe()) == NULL)
+        {
+            return 0;
+        }
 
-		CloseWriteEnd(nextPipe);
-		prevPipe = nextPipe;
-		nextPipe = NULL;
-    	}
-printf("Job %d has %d children\n",getpid(),children);
-	for (unsigned int c = 0; c < children; ++c)
-	{
-		pid = waitpid(-pgid, NULL, 0);
-		if (pid < 0)
-			exit(EXIT_FAILURE);
-		printf("Job %d claimed command %d\n",getpid(),pid);
-	}
-	exit(EXIT_SUCCESS);
+        pid = fork();
+        if(pid == -1)
+        {
+            return 0;
+        }
+
+        if(pid == 0)
+        {
+            RedirectStdinStdout(prevPipe, nextPipe, job->coms[i]);
+            executeCommand(job->coms[i]);
+        }
+
+        CloseWriteEnd(prevPipe);
+        CloseReadEnd(prevPipe);
+        free(prevPipe);
+        prevPipe = NULL;
+
+        CloseWriteEnd(nextPipe);
+        prevPipe = nextPipe;
+        nextPipe = NULL;
+
+        if(job->async == 1)
+        {
+            //Set the process group ID for the job
+            if(pgID == -1)
+            {
+                pgID = pid;
+                if(setpgid(pid, 0) == -1)
+                {
+                    return 0;
+                }
+            }
+
+            //Set the process group for the child process
+            if(setpgid(pid, pgID) == -1)
+            {
+                return 0;
+            }
+        }
+
+
+    }
+
+    if(job->async == 0)
+    {
+        WaitForSeqJob();
+    }
+
+    return 1;
 }
