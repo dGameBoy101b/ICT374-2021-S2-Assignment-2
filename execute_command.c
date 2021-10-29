@@ -92,7 +92,7 @@ printf("exeternal command detected\n");
 			exit(-1);
 		}
 	}
-	execv(str, argv);
+	execvp(str, argv);
 	free(str);
 	exit(-1);
 }
