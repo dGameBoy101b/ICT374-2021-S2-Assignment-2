@@ -3,13 +3,13 @@
 #include "command.h"
 
 /** The keyword used to run the print working directory command */
-const struct CharVec*const PWD_KEYWORD = createCharVecStr("pwd");
+#define PWD_KEYWORD "pwd"
 
 /** The keyword used to run the change directory command */
-const struct CharVec*const CD_KEYWORD = createCharVecStr("cd");
+#define CD_KEYWORD "cd"
 
 /** The keyword used to run the change prompt command */
-const struct CharVec*const PROMPT_KEYWORD = createCharVecStr("prompt");
+#define PROMPT_KEYWORD "prompt"
 
 /** Execute the given command as the current process
 \param com The command to run
@@ -17,3 +17,9 @@ const struct CharVec*const PROMPT_KEYWORD = createCharVecStr("prompt");
 \note Process will exit with -1 on failure
 */
 void executeCommand(const struct Command*const com);
+
+/** Executes special built-in commands that affect the shell.
+ \param com: a Command struct to execute.
+ \return int: 0 if special commands not executed, or 1 if executed successfully.
+ */
+int executeSpecial(const struct Command *const com);

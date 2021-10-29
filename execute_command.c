@@ -1,7 +1,49 @@
 #include "execute_command.h"
 #include "PWDFuncs.h"
 #include "change_prompt.h"
+#include <unistd.h>
 #include <stdlib.h>
+
+int equalCharVecStr(struct CharVec *vec, const char *str)
+{
+    int equal = 0;
+    struct CharVec *chVec = createCharVecStr(str);
+    equal = equalCharVec(vec, chVec);
+    destroyCharVec(chVec);
+    return equal;
+}
+
+int executeSpecial(const struct Command *const com)
+{
+    if(com == NULL)
+    {
+        return 0;
+    }
+
+    char* str = NULL;
+    int res;
+
+    //Note: a check for CD_KEYWORD is in the normal executeCommand function
+    //but it wouldn't really do anything if called from a child process. That
+    //is OK and in line with the behaviour of the bash shell.
+    if(equalCharVecStr(com->path, CD_KEYWORD))
+    {
+        if(com->args->count >= 2 && !getStrCharVec(&str, getEleCharVecVec(com->args, 1)))
+        {
+            return 0;
+        }
+
+        res = DirectoryWalk(str);
+
+		free(str);
+		if (res)
+		{
+            return 1;
+		}
+    }
+
+    return 0;
+}
 
 void executeCommand(const struct Command*const com)
 {
@@ -10,28 +52,28 @@ void executeCommand(const struct Command*const com)
 	//check for special commands
 	char* str = NULL;
 	int res;
-	if (equalCharVec(com->path, PWD_KEYWORD)
+	if (equalCharVecStr(com->path, PWD_KEYWORD))
 	{
 		PrintPWD();
 		exit(0);
 	}
-	if (equalCharVec(com->path, CD_KEYWORD))
+	if (equalCharVecStr(com->path, CD_KEYWORD))
 	{
-		res = com->args->count < 2 || !getStrCharVec(str, com->args->vec + 1) || !DirectoryWalk(str);
+		res = com->args->count < 2 || !getStrCharVec(&str, com->args->vec + 1) || !DirectoryWalk(str);
 		free(str);
 		if (res)
 			exit(0);
 		exit(-1);
 	}
-	if (equalCharVec(com->path, PROMPT_KEYWORD))
+	if (equalCharVecStr(com->path, PROMPT_KEYWORD))
 	{
-		res = com->args->count < 2 || !getStrCharVec(str, com->args->vec + 1) || !changePrompt(str);
+		res = com->args->count < 2 || !getStrCharVec(&str, com->args->vec + 1) || !changePrompt(str);
 		free(str);
 		if (res)
 			exit(0);
 		exit(-1);
 	}
-	if (!getStrCharVec(str, com->path))
+	if (!getStrCharVec(&str, com->path))
 		exit(-1);
 	char** argv = malloc(sizeof(char*) * (com->args->count + 1));
 	if (argv == NULL)
@@ -44,7 +86,7 @@ void executeCommand(const struct Command*const com)
 	for (unsigned int i = 0; i < com->args->count; ++i)
 	{
 		argv[i] = NULL;
-		if (!getStrCharVec(argv[i], com->args->vec[i]))
+		if (!getStrCharVec(&argv[i], &(com->args->vec[i])))
 		{
 			free(str);
 			exit(-1);
